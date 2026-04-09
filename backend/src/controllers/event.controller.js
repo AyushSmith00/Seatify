@@ -72,3 +72,35 @@ export const getAllevents = async(req, res) => {
         })
     }
 }
+
+export const getSingleEvent = async(req,res) => {
+    try {
+        const {id} = req.params;
+
+        const event = await prisma.event.findUnique({
+            where: {
+                id: Number(id)
+            }
+        })
+
+        if(!event){
+            return res.status(404).json({
+                success: false,
+                message: "Event not found"
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            event,
+        });
+
+
+    } catch (error) {
+        console.error("SingleEvent Error", error)
+        return res.status(500).json({
+            success: false,
+            message: "Server Error"
+        })
+    }
+}
