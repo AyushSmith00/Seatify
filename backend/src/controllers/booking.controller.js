@@ -72,3 +72,42 @@ export const createBooking = async(req, res) => {
         });
     }
 }
+
+export const getMyBookings = async(req, res) => {
+    try {
+        const bookings = await prisma.booking.findUnique({
+            where: {
+                userId: req.user.id
+            },
+            include: {
+                event: {
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                        location: true,
+                        date: true,
+                        price: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            count: bookings.length,
+            bookings,
+        })
+
+
+    } catch (error) {
+        console.error("Get My Booking Error", error)
+        return res.status(500).json({
+            success: false,
+            message: "Server Error",
+        })
+    }
+}
