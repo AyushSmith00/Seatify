@@ -104,3 +104,29 @@ export const getSingleEvent = async(req,res) => {
         })
     }
 }
+
+export const getMyEvents = async(req, res) => {
+    try {
+        const events = await prisma.booking.findMany({
+            where: {
+                organizerId: req.user.id
+            },
+            orderBy: {
+                createdAt: "desc",
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            count: events.length,
+            events,
+        });
+
+    } catch (error) {
+        console.error("GetMyEvents Error", error)
+        return res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+}

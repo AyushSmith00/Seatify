@@ -75,7 +75,7 @@ export const createBooking = async(req, res) => {
 
 export const getMyBookings = async(req, res) => {
     try {
-        const bookings = await prisma.booking.findUnique({
+        const bookings = await prisma.booking.findMany({
             where: {
                 userId: req.user.id
             },
