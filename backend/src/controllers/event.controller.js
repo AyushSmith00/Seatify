@@ -107,13 +107,18 @@ export const getSingleEvent = async(req,res) => {
 
 export const getMyEvents = async(req, res) => {
     try {
-        const events = await prisma.booking.findMany({
+        const events = await prisma.event.findMany({
             where: {
                 organizerId: req.user.id
             },
             orderBy: {
                 createdAt: "desc",
-            }
+            },
+            include: {
+                organizer: {
+                    id: true, username: true, email: true
+                }
+            },
         });
 
         return res.status(200).json({

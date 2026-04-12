@@ -1,5 +1,5 @@
 import express from "express"
-import { registerUser, loginUser} from "../controllers/auth.controllers.js";
+import { registerUser, loginUser, refreshAccessToken, logout} from "../controllers/auth.controllers.js";
 import { protect } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
 
@@ -29,6 +29,9 @@ router.get("/organizer-dashboard", protect, authorizeRoles("ORGANIZER"), (req, r
         user: req.user,
     });
 });
+
+router.post("/refresh", refreshAccessToken);
+router.post("/logout", logout);
 
 export default router;
 
