@@ -2,6 +2,7 @@ import prisma from "../config/prisma.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { generateAccessToken, generateRefreshToken } from "../utils/generate.token.js"
+import { use } from "react"
 
 export const registerUser= async (req, res) => {
     try {
@@ -92,6 +93,13 @@ export const loginUser = async(req, res) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
+        await prisma.user.update({
+            where: {id: user.id},
+            data: {
+                refreshToken: refreshToken,
+            }
+        })
+
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -156,8 +164,16 @@ export const refreshAccessToken = async(req, res) => {
     };
 };
 
-export const logout = (req, res) => {
+export const logout = async(req, res) => {
     try {
+
+        await prisma.user.update({
+            where: {id: req.user.id},
+            data: {
+                refreshToken: null,
+            }
+        })
+
         res.clearCookie("refreshToken");
     
         return res.status(200).json({

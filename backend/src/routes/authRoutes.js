@@ -31,7 +31,7 @@ router.get("/organizer-dashboard", protect, authorizeRoles("ORGANIZER"), (req, r
 });
 
 router.post("/refresh", refreshAccessToken);
-router.post("/logout", logout);
+router.post("/logout",protect, logout);
 
 export default router;
 
