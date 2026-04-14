@@ -2,7 +2,6 @@ import prisma from "../config/prisma.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { generateAccessToken, generateRefreshToken } from "../utils/generate.token.js"
-import { use } from "react"
 
 export const registerUser= async (req, res) => {
     try {
@@ -131,9 +130,11 @@ export const refreshAccessToken = async(req, res) => {
                 message: "Token not Found"
             })
         }
+        
 
         const decode = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 
+        
         const user = await prisma.user.findUnique({
             where: {
                 id: decode.id
@@ -146,6 +147,13 @@ export const refreshAccessToken = async(req, res) => {
                 message: "Invalid Token"
             })
         };
+
+        if(user.refreshToken !== token){
+            return res.status(401).json({
+                success: false,
+                message: "Invalid Token (Mismatch)"
+            })
+        }
 
         const newAccessToken =  generateAccessToken(user)
 

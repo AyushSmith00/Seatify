@@ -116,8 +116,12 @@ export const getMyEvents = async(req, res) => {
             },
             include: {
                 organizer: {
-                    id: true, username: true, email: true
-                }
+                    select: {
+                        id: true,
+                        username: true,
+                        email: true,
+                    },
+                },
             },
         });
 

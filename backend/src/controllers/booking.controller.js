@@ -50,7 +50,9 @@ export const createBooking = async(req, res) => {
                 },
 
                 data: {
-                    availableSeats: event.availableSeats - Number(quantity)
+                    availableSeats: {
+                        decrement: Number(quantity)
+                    }
                 },
             });
 
