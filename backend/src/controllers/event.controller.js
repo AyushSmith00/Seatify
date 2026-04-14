@@ -137,5 +137,42 @@ export const getMyEvents = async(req, res) => {
             success: false,
             message: "Server Error"
         });
-    }
-}
+    };
+};
+
+export const getBookingsForMyEvents = async (req, res) => {
+    try {
+        const events = await prisma.event.findMany({
+            where: {
+                organizerId: req.user.id
+            },
+            include: {
+                bookings: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                username: true,
+                                email: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            count: events.length,
+            events
+        });
+
+
+    } catch (error) {
+        console.error("Get Booking for my event Error", error)
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    };
+};
