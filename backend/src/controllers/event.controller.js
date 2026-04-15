@@ -41,7 +41,32 @@ export const createEvent = async(req, res) => {
 
 export const getAllevents = async(req, res) => {
     try {
+
+        const {page = 1, limit = 10, location, priceMin, priceMax} = req.params;
+
+        const skip = (Number(page) - 1) * Number(limit);
+
+        const filter = {};
+
+        if(location){
+            filter.location = {
+                contains: location,
+                case: "insensitive",
+            }
+        };
+
+        if(priceMin || priceMax){
+            filter.price = {};
+            if(priceMin) filter.price.gte = Number(priceMin);
+            if(priceMax) filter.price.lte = Number(priceMax);
+        }
+
+
         const events = await prisma.event.findMany({
+
+            where: filter,
+            skip,
+            take: Number(limit),
             orderBy: {
                 createdAt: "desc",
             },
@@ -57,8 +82,16 @@ export const getAllevents = async(req, res) => {
             }
         })
 
+        const total = await prisma.event.count({
+            where: filter,
+        })
+
         return res.status(200).json({
             success: true,
+            page: Number(page),
+            limit: Number(limit),
+            total,
+            totalPage: Math.ceil(total / limit),
             count: events.length,
             events,
         })
@@ -176,3 +209,50 @@ export const getBookingsForMyEvents = async (req, res) => {
         });
     };
 };
+
+export const getEventsStats = async(req, res) => {
+    try {
+        const events = await prisma.event.findMany({
+            where: {
+                organizerId: req.user.id
+            },
+            include: {
+                bookings: true,
+            },
+        });
+
+        const stats = events.map(event => {
+            const totalbooking = event.bookings.length;
+
+            const totalTicketSold = event.bookings.reduce(
+                (sum, b) => sum + b.quantity,
+                0 
+            );
+
+            const totalRevenue = event.bookings.reduce(
+                (sum, b) => sum + b.totalPrice,
+                0
+            );
+
+            return {
+                eventId: event.id,
+                title: event.title,
+                totalbooking,
+                totalTicketSold,
+                totalRevenue,
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            stats,
+        })
+
+    } catch (error) {
+        console.error("Get events stats Error", error)
+        return res.status(500).json({
+            success: false,
+            message: "Server Error"
+        })
+    }
+}
