@@ -256,3 +256,95 @@ export const getEventsStats = async(req, res) => {
         })
     }
 }
+
+export const updateEvent = async(req, res) => {
+    try {
+        const {id} = req.params
+
+        const event = await prisma.event.findUnique({
+            where: {id : Number(id)}
+        })
+
+        if(!event){
+            return res.status(404).json({
+                success: false,
+                message: "Event not found"
+            })
+        }
+
+        if(event.organizerId !== req.user.id){
+            return res.status(403).json({
+                success: false,
+                message: "Not authorized to update this event"
+            })
+        }
+
+        const updatedEvent = await prisma.event.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                ...req.body,
+                date: req.body.date ? new Date(req.body.date) : undefined
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Event updated successfully",
+            event: updatedEvent
+        })
+
+
+    } catch (error) {
+        console.error("Update Event Error", error)
+        return res.status(500).json({
+            success: false,
+            message: "Server Error"
+        })
+    }
+}
+
+export const deleteEvent = async(req, res) => {
+    try {
+        const {id} = req.params
+
+        const event = await prisma.event.findUnique({
+            where: {
+                id: Number(id),
+            },
+        });
+
+        if(!event){
+            return res.status(404).json({
+                success: false,
+                message: "Event not Found"
+            })
+        }
+
+        if(event.organizerId !== req.user.id){
+            return res.status(403).json({
+                success: false,
+                message: "Not authorized to delete this event"
+            })
+        }
+
+        await prisma.event.delete({
+            where: {
+                id: Number(id)
+            }
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "Event deleted Successfully"
+        })
+
+    } catch (error) {
+        console.error("Delete Event Error", error)
+        return res.status(500).json({
+            success: false,
+            message: "Server Error"
+        })
+    }
+}
