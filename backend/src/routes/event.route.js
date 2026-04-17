@@ -12,7 +12,7 @@ router.get("/my-events/stats", protect, authorizeRoles("ORGANIZER"), getEventsSt
 router.get("/", getAllevents);
 
 router.put("/:id", protect, authorizeRoles("ORGANIZER"), updateEvent);
-router.delete(("/:id", protect, authorizeRoles("ORGANIZER"), deleteEvent));
+router.delete("/:id", protect, authorizeRoles("ORGANIZER"), deleteEvent);
 
 router.get("/:id", getSingleEvent);
 
