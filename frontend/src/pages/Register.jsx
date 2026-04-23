@@ -6,6 +6,7 @@ function Register() {
         username: "",
         email: "",
         password: "",
+        role: "CUSTOMER",
     });
     
     const handleChange = (e) => {
@@ -18,13 +19,14 @@ function Register() {
     const handleSubmit = async(e) => {
         e.preventDefault();
 
+
         try {
-            const res = await API.post("/auth/register")
+            const res = await API.post("/auth/register", form)
             alert("Registered Successfully");
             console.log(res.data);
 
         } catch (error) {
-            console.error(error)
+            console.log(error.response.data);
             alert("Register Failed");
         };
     }

@@ -1,5 +1,63 @@
-function Login(){
-    return <h1 className="text-2xl">This is Login Page</h1>
+import { useState } from "react";
+import API from "../services/api.js";
+
+function Login() {
+    const [form, setForm] = useState({
+        email: "",
+        password: "",
+    });
+
+    const handleChange = (e) => {
+        setForm({
+            ...form,
+            [e.target.name] : e.traget.value
+        })
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        try {
+            res = await API.post("/auth/login")
+            
+            console.log(res.data)
+
+            alert("Login Successfully")
+
+        } catch (error) {
+            console.log(error.response?.data);
+            alert("Login Failed")
+        }
+    }
+
+    return (
+        <div className="flex justify-center items-center h-screen">
+            <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-4 bg-gray-800 p-6 rounded text-white w-80"
+            >
+                <h2 className="text-xl font-bold">Login</h2>
+                
+                <input 
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    onChange={handleChange}
+                    className="p-2 rounded text-black"
+                />
+
+                <input 
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    onChange={handleChange}
+                    className="p-2 rounded text-black"
+                />
+
+                <button className="bg-green-500 p-2 rounded">Login</button>
+            </form>
+        </div>
+    )
 }
 
-export default Login
+export default Login;
