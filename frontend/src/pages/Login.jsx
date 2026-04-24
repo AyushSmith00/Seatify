@@ -10,15 +10,15 @@ function Login() {
     const handleChange = (e) => {
         setForm({
             ...form,
-            [e.target.name] : e.traget.value
+            [e.target.name] : e.target.value
         })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault()
 
         try {
-            res = await API.post("/auth/login")
+            const res = await API.post("/auth/login", form)
             
             console.log(res.data)
 
