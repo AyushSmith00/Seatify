@@ -1,11 +1,14 @@
 import { useState } from "react";
 import API from "../services/api.js";
+import {useNavigate} from "react-router-dom"
 
 function Login() {
     const [form, setForm] = useState({
         email: "",
         password: "",
     });
+
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setForm({
@@ -23,6 +26,8 @@ function Login() {
             console.log(res.data)
 
             alert("Login Successfully")
+
+            navigate("/")
 
         } catch (error) {
             console.log(error.response?.data);
