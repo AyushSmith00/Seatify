@@ -1,3 +1,5 @@
+Work in Progress.....
+
 # Seatify — Event Ticket Booking Platform
 
 Seatify is a full-stack event ticket booking platform where organizers can create and manage events, and users can browse and book tickets seamlessly.
