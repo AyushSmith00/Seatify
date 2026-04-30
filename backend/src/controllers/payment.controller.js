@@ -75,7 +75,7 @@ export const verifyPayment = async(req, res) => {
 
         const generateSignature = crypto
             .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-            .update(`${razorpay_order_id} | ${razorpay_payment_id}`)
+            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
             .digest("hex")
 
         if(generateSignature !== razorpay_signature){

@@ -5,6 +5,7 @@ import dotenv from "dotenv"
 import authRoutes from "./routes/authRoutes.js"
 import eventRoutes from "./routes/event.route.js"
 import bookingRoutes from "./routes/booking.routes.js"
+import paymentRoutes from "./routes/payment.routes.js"
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ app.use(cookieParser())
 app.use("/api/auth", authRoutes)
 app.use("/api/events", eventRoutes)
 app.use("/api/bookings", bookingRoutes)
+app.use("/api/payments", paymentRoutes)
 
 app.get("/", (req, res) => {
     res.send("Your Seatify is online")

@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import API from "../services/api.js";
-import { availableMemory } from "node:process";
+import { useNavigate } from "react-router-dom";
 
 function Home(){
 
     const [events, setEvents] = useState([]);
+    const navigate = useNavigate();
+
+    const user = JSON.parse(localStorage.getItem("user"));
 
     useEffect(() => {
         const fetchEvent = async() => {
@@ -25,11 +28,11 @@ function Home(){
     const handleBooking = async(eventId, quantity) => {
         try {
             
-            const res = await API.post(`/booking/%{eventId}`, {quantity});
+            const res = await API.post(`/booking/${eventId}`, {quantity});
 
             alert("Ticket Booked!");
 
-            setEvents((prev) => prev.map((event) => event.id == eventId ? {...event, availableSeats: event.availableSeats - quantity}: events))
+            setEvents((prev) => prev.map((event) => event.id == eventId ? {...event, availableSeats: event.availableSeats - quantity}: event))
 
         } catch (error) {
             console.log(error.response?.data);

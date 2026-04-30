@@ -2,7 +2,6 @@ import { error } from "console";
 import prisma from "../config/prisma.js";
 import razorpay from "../config/razorpay.js";
 import crypto from "crypto"
-import { removeAllListeners } from "cluster";
 
 export const createBooking = async (req, res) => {
   try {
