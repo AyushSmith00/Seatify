@@ -25,6 +25,8 @@ function Login() {
             
             console.log(res.data)
 
+            localStorage.setItem("user", JSON.stringify(res.data.user));
+
             alert("Login Successfully")
 
             navigate("/")

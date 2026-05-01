@@ -3,16 +3,15 @@ import jwt from "jsonwebtoken";
 
 export const protect = async(req, res, next) => {
     try {
-        const authHeader = req.headers.authorization;
 
-        if(!authHeader || !authHeader.startsWith("Bearer ")){
+        const token = req.cookies.accessToken;
+
+        if(!token){
             return res.status(401).json({
                 success: false,
-                message: "Not authorized, token missing",
-            });
-        };
-
-        const token = authHeader.split(" ")[1];
+                message: "Not authorized, token missing"
+            })
+        }
 
         const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
@@ -20,7 +19,6 @@ export const protect = async(req, res, next) => {
             where: {id: decode.id},
             select: {
                 id: true,
-                username: true,
                 email: true,
                 role:true,
             },

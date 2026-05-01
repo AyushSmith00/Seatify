@@ -25,40 +25,51 @@ function Home(){
         fetchEvent()
     }, [])
 
-    const handleBooking = async(eventId, quantity) => {
-        try {
-            
-            const res = await API.post(`/booking/${eventId}`, {quantity});
-
-            alert("Ticket Booked!");
-
-            setEvents((prev) => prev.map((event) => event.id == eventId ? {...event, availableSeats: event.availableSeats - quantity}: event))
-
-        } catch (error) {
-            console.log(error.response?.data);
-        }
-    }
 
 
     return (
-        <div className="p-6 text-white">
-            <h1 className="text-2xl mb-4">All Events</h1>
+    <div className="p-6 text-white">
+      
+      <div className="mb-4">
+        <h2 className="text-lg">Logged in as: {user?.email}</h2>
+        <h3 className="text-md">Role: {user?.role}</h3>
+      </div>
 
-            <div className="grid gap-4">
-                {Array.isArray(events) && events.map((event) => (
-                <div
-                    key={event.id}
-                    className="bg-gray-800 p-4 rounded">
-                    <h2 className="text-xl">{event.title}</h2>
-                    <p>{event.description}</p>
-                    <p>Seats: {event.availableSeats}</p>
 
-                    <button onClick={() => handleBooking(event.id)} className="bg-green-500 px-4 py-2 rounded mt-2">Book Ticket</button>
-                </div>
-                ))}
+      {user?.role === "ORGANIZER" && (
+        <button
+          onClick={() => navigate("/create-event")}
+          className="bg-blue-500 px-4 py-2 rounded mb-4"
+        >
+          Create Event
+        </button>
+      )}
+
+      <h1 className="text-2xl mb-4">All Events</h1>
+
+      <div className="grid gap-4">
+        {Array.isArray(events) &&
+          events.map((event) => (
+            <div key={event.id} className="bg-gray-800 p-4 rounded">
+              <h2 className="text-xl">{event.title}</h2>
+              <p>{event.description}</p>
+              <p>Seats: {event.availableSeats}</p>
+              <p>Price: ₹{event.price}</p>
+
+              
+              {user?.role === "CUSTOMER" && (
+                <button
+                  onClick={() => console.log("Payment flow here")}
+                  className="bg-green-500 px-4 py-2 rounded mt-2"
+                >
+                  Book Ticket
+                </button>
+              )}
             </div>
-        </div>
-    );
+          ))}
+      </div>
+    </div>
+  );
 }
 
-export default Home
+export default Home;
