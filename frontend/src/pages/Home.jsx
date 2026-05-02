@@ -59,10 +59,10 @@ function Home(){
               
               {user?.role === "CUSTOMER" && (
                 <button
-                  onClick={() => console.log("Payment flow here")}
+                  onClick={() => navigate(`/event/${event.id}`)}
                   className="bg-green-500 px-4 py-2 rounded mt-2"
                 >
-                  Book Ticket
+                  view Details
                 </button>
               )}
             </div>
