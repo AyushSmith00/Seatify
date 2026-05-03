@@ -1,89 +1,154 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api.js";
+import Layout from "../components/Layout";
 
-function CreateEvent(){
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("")
-    const [location, setLocation] = useState("")
-    const [date, setDate] = useState("")
-    const [price, setPrice] = useState(0)
-    const [totalSeats, setTotalSeats] = useState(100)
+function CreateEvent() {
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    location: "",
+    date: "",
+    price: "",
+    totalSeats: "",
+  });
 
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
-    const handleSubmit = async() => {
-        try {
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-            await API.post("/events/create", {
-                title,
-                description,
-                location,
-                date,
-                price: Number(price),
-                totalSeats: Number(totalSeats)
-            }, {withCredentials: true});
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-            alert("Event Created");
+    try {
+      await API.post(
+        "/events/create",
+        {
+          ...form,
+          price: Number(form.price),
+          totalSeats: Number(form.totalSeats),
+        },
+        { withCredentials: true }
+      );
 
-            navigate("/")
+      alert("Event Created 🎉");
+      navigate("/");
+    } catch (error) {
+      console.error(error.response?.data);
+      alert("Failed to create event");
+    }
+  };
 
-        } catch (error) {
-            console.error(error.response?. error)
-        }
-    } 
+  return (
+    <Layout>
 
-    return (
-        <div className="p-6 text-white">
-            <h1 className="text-2xl mb-4">Create Event</h1>
+      {/* HEADER */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Create Event</h1>
+        <p className="text-gray-400 text-sm">
+          Publish a new event for users to book
+        </p>
+      </div>
 
-            <input
-                placeholder="Title"
-                className="block mb-2 p-2 text-black"
-                onChange={(e) => setTitle(e.target.value)}
-            />
+      {/* FORM CARD */}
+      <div className="max-w-2xl">
 
-            <input
-                placeholder="Description"
-                className="block mb-2 p-2 text-black"
-                onChange={(e) => setDescription(e.target.value)}
-            />
+        <form
+          onSubmit={handleSubmit}
+          className="
+            bg-gradient-to-br from-[#111827] to-[#0b1220]
+            border border-gray-800
+            p-6 rounded-2xl
+            shadow-[0_0_0_1px_rgba(255,255,255,0.03)]
+            space-y-6
+          "
+        >
 
-            <input  
+          {/* SECTION: BASIC INFO */}
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Basic Info</h2>
+
+            <div className="space-y-4">
+              <input
+                type="text"
+                name="title"
+                placeholder="Event Title"
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+              />
+
+              <textarea
+                name="description"
+                placeholder="Event Description"
+                rows="3"
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          {/* SECTION: DETAILS */}
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Details</h2>
+
+            <div className="space-y-4">
+              <input
+                type="text"
+                name="location"
                 placeholder="Location"
-                className="block mb-2 p-2 text-black"
-                onChange={(e) => setLocation(e.target.value)}
-            />
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+              />
 
-            <input  
-                placeholder="Date"
-                className="block mb-2 p-2 text-black"
-                onChange={(e) => setDate(e.target.value)}
-            />
+              <input
+                type="datetime-local"
+                name="date"
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
 
+          {/* SECTION: PRICING */}
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Pricing & Capacity</h2>
 
-            <input
+            <div className="grid grid-cols-2 gap-4">
+              <input
                 type="number"
-                placeholder="Price"
-                className="block mb-2 p-2 text-black"
-                onChange={(e) => setPrice(e.target.value)}
-            />
+                name="price"
+                placeholder="Price (₹)"
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+              />
 
-            <input
+              <input
                 type="number"
+                name="totalSeats"
                 placeholder="Total Seats"
-                className="block mb-2 p-2 text-black"
-                onChange={(e) => setTotalSeats(e.target.value)}
-            />
+                onChange={handleChange}
+                className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
 
-            <button
-                onClick={handleSubmit}
-                className="bg-blue-500 px-4 py-2 rounded"
-            >
-                Create
-            </button>
-        </div>
-    );
+          {/* BUTTON */}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 transition p-3 rounded-lg font-semibold"
+          >
+            Create Event
+          </button>
+        </form>
+      </div>
+
+    </Layout>
+  );
 }
 
 export default CreateEvent;

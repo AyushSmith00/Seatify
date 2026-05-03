@@ -1,74 +1,87 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import API from "../services/api.js";
 import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
 
-function Home(){
+function Home() {
+  const [events, setEvents] = useState([]);
+  const navigate = useNavigate();
 
-    const [events, setEvents] = useState([]);
-    const navigate = useNavigate();
+  useEffect(() => {
+    API.get("/events")
+      .then(res => setEvents(res.data.events))
+      .catch(() => setEvents([]));
+  }, []);
 
-    const user = JSON.parse(localStorage.getItem("user"));
+  return (
+    <Layout>
 
-    useEffect(() => {
-        const fetchEvent = async() => {
-            try {
-
-                const res = await API.get("/events")
-                setEvents(res.data.events)
-
-            } catch (error) {
-                console.error(error);
-            };
-        };
-
-
-        fetchEvent()
-    }, [])
-
-
-
-    return (
-    <div className="p-6 text-white">
-      
-      <div className="mb-4">
-        <h2 className="text-lg">Logged in as: {user?.email}</h2>
-        <h3 className="text-md">Role: {user?.role}</h3>
+      {/* HEADER */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">All Events</h1>
+        <p className="text-gray-400 text-sm">
+          Discover and book amazing events
+        </p>
       </div>
 
+      {/* EMPTY STATE */}
+      {events.length === 0 ? (
+        <p className="text-gray-400">No events available.</p>
+      ) : (
 
-      {user?.role === "ORGANIZER" && (
-        <button
-          onClick={() => navigate("/create-event")}
-          className="bg-blue-500 px-4 py-2 rounded mb-4"
-        >
-          Create Event
-        </button>
-      )}
+        <div className="grid md:grid-cols-3 gap-6">
 
-      <h1 className="text-2xl mb-4">All Events</h1>
+          {events.map((event) => (
+            <div
+              key={event.id}
+              className="
+                bg-gradient-to-br from-[#111827] to-[#0b1220]
+                border border-gray-800
+                p-5 rounded-2xl
+                hover:-translate-y-1 hover:shadow-xl
+                transition duration-300
+              "
+            >
+              {/* TITLE */}
+              <h2 className="text-xl font-semibold">
+                {event.title}
+              </h2>
 
-      <div className="grid gap-4">
-        {Array.isArray(events) &&
-          events.map((event) => (
-            <div key={event.id} className="bg-gray-800 p-4 rounded">
-              <h2 className="text-xl">{event.title}</h2>
-              <p>{event.description}</p>
-              <p>Seats: {event.availableSeats}</p>
-              <p>Price: ₹{event.price}</p>
+              {/* DESCRIPTION */}
+              <p className="text-gray-400 text-sm mt-1 line-clamp-2">
+                {event.description}
+              </p>
 
-              
-              {user?.role === "CUSTOMER" && (
-                <button
-                  onClick={() => navigate(`/event/${event.id}`)}
-                  className="bg-green-500 px-4 py-2 rounded mt-2"
-                >
-                  view Details
-                </button>
-              )}
+              {/* LOCATION + DATE */}
+              <div className="mt-3 space-y-1 text-sm text-gray-400">
+                <p>📍 {event.location}</p>
+                <p>📅 {new Date(event.date).toLocaleDateString("en-IN")}</p>
+              </div>
+
+              {/* PRICE */}
+              <p className="mt-3 font-semibold text-lg">
+                ₹{event.price}
+              </p>
+
+              {/* BUTTON */}
+              <button
+                onClick={() => navigate(`/event/${event.id}`)}
+                className="
+                  mt-4 w-full
+                  bg-green-600 hover:bg-green-700
+                  transition p-2 rounded-lg
+                  font-medium
+                "
+              >
+                View Details
+              </button>
             </div>
           ))}
-      </div>
-    </div>
+
+        </div>
+      )}
+
+    </Layout>
   );
 }
 

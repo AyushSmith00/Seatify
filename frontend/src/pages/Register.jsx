@@ -1,74 +1,73 @@
 import { useState } from "react";
-import API from "../services/api.js";
+import API from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
-    const [form, setForm] = useState({
-        username: "",
-        email: "",
-        password: "",
-        role: "CUSTOMER",
-    });
-    
-    const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
-    };
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
-    const handleSubmit = async(e) => {
-        e.preventDefault();
+  const navigate = useNavigate();
 
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
-        try {
-            const res = await API.post("/auth/register", form)
-            alert("Registered Successfully");
-            console.log(res.data);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        } catch (error) {
-            console.log(error.response.data);
-            alert("Register Failed");
-        };
+    try {
+      await API.post("/auth/register", form);
+      navigate("/login");
+    } catch {
+      alert("Register failed");
     }
+  };
 
-    return (
-        <div className="flex justify-center items-center h-screen">
-            <form
-                onSubmit={handleSubmit}
-                className="flex flex-col gap-4 bg-gray-800 p-6 rounded text-white w-80">
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="
+        w-full max-w-md
+        bg-gradient-to-br from-[#111827] to-[#0b1220]
+        border border-gray-800
+        p-8 rounded-2xl
+        space-y-5
+        shadow-xl
+        "
+      >
+        <h2 className="text-2xl font-bold text-center">Create Account</h2>
 
-                <h2 className="text-xl font-bold">Register</h2>
+        <input
+          name="username"
+          placeholder="Username"
+          onChange={handleChange}
+          className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+        />
 
-                <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                onChange={handleChange}
-                className="p-2 rounded text-black"
-                />
+        <input
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
+          className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+        />
 
-                <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                onChange={handleChange}
-                className="p-2 rounded text-black"
-                />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          onChange={handleChange}
+          className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+        />
 
-                <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                onChange={handleChange}
-                className="p-2 rounded text-black"
-                />
-
-                <button className="bg-blue-500 p-2 rounded">
-                Register
-                </button>
-            </form>
-        </div>
-    )
+        <button className="w-full bg-blue-600 hover:bg-blue-700 transition p-3 rounded-lg font-semibold">
+          Register
+        </button>
+      </form>
+    </div>
+  );
 }
 
-export default Register
+export default Register;

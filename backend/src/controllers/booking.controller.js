@@ -1,4 +1,3 @@
-import { error } from "console";
 import prisma from "../config/prisma.js";
 import razorpay from "../config/razorpay.js";
 import crypto from "crypto"
@@ -47,6 +46,15 @@ export const createOrder = async(req, res) => {
     try {
         const {eventId} = req.params;
         const {quantity} = req.body;
+
+        const qty = Number(quantity)
+
+        if(!qty || qty < 1){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid quantity"
+            })
+        }
         
         const event = await prisma.event.findUnique({
             where: {
@@ -61,7 +69,14 @@ export const createOrder = async(req, res) => {
             })
         }
 
-        const amount = event.price * quantity * 100
+        if(event.availableSeats < qty) {
+            return res.status(400).json({
+                success: false,
+                message: "Not enough seats available"
+            });
+        };
+
+        const amount = event.price * qty * 100
 
         const order = await razorpay.orders.create({
             amount,

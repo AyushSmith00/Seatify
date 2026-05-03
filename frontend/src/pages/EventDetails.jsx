@@ -1,110 +1,57 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../services/api.js";
+import Layout from "../components/Layout";
 
-const EventDetails = () => {
+export default function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
-  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const res = await API.get(`/events/${id}`);
-        setEvent(res.data.event);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchEvent();
+    API.get(`/events/${id}`).then(res => setEvent(res.data.event));
   }, [id]);
 
-  const handleBooking = async () => {
-    try {
-      const { data } = await API.post(
-        `/payments/create-order`,
-        {eventId: event.id ,quantity },
-        { withCredentials: true }
-      );
-
-      const { order } = data;
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: "Seatify",
-        description: "Event Booking",
-        order_id: order.id,
-
-        handler: async function (response) {
-          try {
-            await API.post(
-              `/payments/verify-payment`,
-              {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                eventId: Number(id),
-                quantity: Number(quantity),
-              },
-              { withCredentials: true }
-            );
-
-            alert("Booking Successful 🎉");
-          } catch (err) {
-            console.error(err);
-            alert("Payment verification failed");
-          }
-        },
-
-        prefill: {
-          name: "User",
-          email: "user@example.com",
-        },
-
-        theme: {
-          color: "#3399cc",
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (err) {
-      console.error(err);
-      alert("Error creating order");
-    }
-  };
-
-  if (!event) return <p>Loading...</p>;
+  if (!event) return <Layout>Loading...</Layout>;
 
   return (
-    <div className="p-6 text-white">
-      <h1 className="text-2xl">{event.title}</h1>
-      <p>{event.description}</p>
-      <p>Location: {event.location}</p>
-      <p>Date: {new Date(event.date).toLocaleString()}</p>
-      <p>Price: ₹{event.price}</p>
-      <p>Available Seats: {event.availableSeats}</p>
+    <Layout>
 
-      <input
-        type="number"
-        value={quantity}
-        min="1"
-        max={event.availableSeats}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-        className="text-black p-2 mt-2"
-      />
+      <div className="max-w-2xl mx-auto">
 
-      <button
-        onClick={handleBooking}
-        className="bg-green-500 px-4 py-2 rounded mt-4"
-      >
-        Book Now
-      </button>
-    </div>
+        <div className="
+          bg-gradient-to-br from-[#111827] to-[#0b1220]
+          border border-gray-800
+          p-6 rounded-2xl
+        ">
+
+          <h1 className="text-3xl font-bold mb-2">
+            {event.title}
+          </h1>
+
+          <p className="text-gray-400 mb-4">
+            {event.description}
+          </p>
+
+          <div className="space-y-2 text-sm">
+            <p>📍 {event.location}</p>
+            <p>📅 {new Date(event.date).toLocaleString()}</p>
+            <p>🎟 Seats: {event.availableSeats}</p>
+          </div>
+
+          <div className="mt-6 flex justify-between items-center">
+            <span className="text-2xl font-bold">
+              ₹{event.price}
+            </span>
+
+            <button className="bg-green-600 hover:bg-green-700 px-5 py-2 rounded-lg">
+              Book Now
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </Layout>
   );
-};
-
-export default EventDetails;
+}

@@ -1,70 +1,62 @@
 import { useState } from "react";
-import API from "../services/api.js";
-import {useNavigate} from "react-router-dom"
+import API from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-    });
+  const [form, setForm] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name] : e.target.value
-        })
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await API.post("/auth/login", form);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      navigate("/");
+    } catch {
+      alert("Login failed");
     }
+  };
 
-    const handleSubmit = async(e) => {
-        e.preventDefault()
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="
+        w-full max-w-md
+        bg-gradient-to-br from-[#111827] to-[#0b1220]
+        border border-gray-800
+        p-8 rounded-2xl
+        space-y-5
+        shadow-xl
+        "
+      >
+        <h2 className="text-2xl font-bold text-center">Welcome Back</h2>
 
-        try {
-            const res = await API.post("/auth/login", form)
-            
-            console.log(res.data)
+        <input
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
+          className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+        />
 
-            localStorage.setItem("user", JSON.stringify(res.data.user));
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          onChange={handleChange}
+          className="w-full p-3 rounded-lg bg-[#020617] border border-gray-800 focus:ring-2 focus:ring-blue-500"
+        />
 
-            alert("Login Successfully")
-
-            navigate("/")
-
-        } catch (error) {
-            console.log(error.response?.data);
-            alert("Login Failed")
-        }
-    }
-
-    return (
-        <div className="flex justify-center items-center h-screen">
-            <form
-                onSubmit={handleSubmit}
-                className="flex flex-col gap-4 bg-gray-800 p-6 rounded text-white w-80"
-            >
-                <h2 className="text-xl font-bold">Login</h2>
-                
-                <input 
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    onChange={handleChange}
-                    className="p-2 rounded text-black"
-                />
-
-                <input 
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    onChange={handleChange}
-                    className="p-2 rounded text-black"
-                />
-
-                <button className="bg-green-500 p-2 rounded">Login</button>
-            </form>
-        </div>
-    )
+        <button className="w-full bg-blue-600 hover:bg-blue-700 transition p-3 rounded-lg font-semibold">
+          Login
+        </button>
+      </form>
+    </div>
+  );
 }
 
 export default Login;

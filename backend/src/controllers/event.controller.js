@@ -42,7 +42,7 @@ export const createEvent = async(req, res) => {
 export const getAllevents = async(req, res) => {
     try {
 
-        const {page = 1, limit = 10, location, priceMin, priceMax} = req.params;
+        const {page = 1, limit = 10, location, priceMin, priceMax} = req.query;
 
         const skip = (Number(page) - 1) * Number(limit);
 
