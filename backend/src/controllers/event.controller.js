@@ -4,7 +4,7 @@ export const createEvent = async(req, res) => {
     try {
         const {title, description, location, date, totalSeats, price} = req.body;
 
-        if(!title || !location || !date || !totalSeats || !price){
+        if(!title || !description || !location || !date || !totalSeats || !price){
             return res.status(400).json({
                 success: false,
                 message: "All the Fields are required"

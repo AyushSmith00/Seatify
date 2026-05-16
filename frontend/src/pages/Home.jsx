@@ -16,7 +16,6 @@ function Home() {
   return (
     <Layout>
 
-      {/* HEADER */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">All Events</h1>
         <p className="text-gray-400 text-sm">
@@ -24,7 +23,7 @@ function Home() {
         </p>
       </div>
 
-      {/* EMPTY STATE */}
+      
       {events.length === 0 ? (
         <p className="text-gray-400">No events available.</p>
       ) : (
@@ -42,28 +41,28 @@ function Home() {
                 transition duration-300
               "
             >
-              {/* TITLE */}
+              
               <h2 className="text-xl font-semibold">
                 {event.title}
               </h2>
 
-              {/* DESCRIPTION */}
+             
               <p className="text-gray-400 text-sm mt-1 line-clamp-2">
                 {event.description}
               </p>
 
-              {/* LOCATION + DATE */}
+
               <div className="mt-3 space-y-1 text-sm text-gray-400">
                 <p>📍 {event.location}</p>
                 <p>📅 {new Date(event.date).toLocaleDateString("en-IN")}</p>
               </div>
 
-              {/* PRICE */}
+          
               <p className="mt-3 font-semibold text-lg">
                 ₹{event.price}
               </p>
 
-              {/* BUTTON */}
+              
               <button
                 onClick={() => navigate(`/event/${event.id}`)}
                 className="

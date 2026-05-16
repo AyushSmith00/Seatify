@@ -36,7 +36,7 @@ export const createOrder = async (req, res) => {
         });
         }
 
-        const amount = event.price * qty * 100; // 🔥 IMPORTANT FIX (paise)
+        const amount = event.price * qty * 100;
 
         const order = await razorpay.orders.create({
         amount,
@@ -99,58 +99,60 @@ export const verifyPayment = async (req, res) => {
         }
 
         const result = await prisma.$transaction(async (tx) => {
-        const event = await tx.event.findUnique({
-            where: { id: Number(eventId) },
-        });
+            
+            const event = await tx.event.findUnique({
+                where: { id: Number(eventId) },
+            });
 
-        if (!event) {
-            throw new Error("Event not found");
-        }
+            if (!event) {
+                throw new Error("Event not found");
+            }
 
-        if (event.availableSeats < qty) {
-            throw new Error("Not enough seats available");
-        }
+            if (event.availableSeats < qty) {
+                throw new Error("Not enough seats available");
+            }
 
-        const existingBooking = await tx.booking.findFirst({
-            where: {
-            userId: req.user.id,
-            eventId: event.id,
-            },
-        });
+            const existingBooking = await tx.booking.findFirst({
+                where: {
+                userId: req.user.id,
+                eventId: event.id,
+                },
+            });
 
-        if (existingBooking) {
-            throw new Error("You already booked this event");
-        }
+            if (existingBooking) {
+                throw new Error("You already booked this event");
+            }
 
-        const totalPrice = event.price * qty;
+            const totalPrice = event.price * qty;
 
-        const booking = await tx.booking.create({
-            data: {
-            userId: req.user.id,
-            eventId: Number(event.id),
-            quantity: qty,
-            totalPrice,
-            paymentId: razorpay_payment_id,
-            },
-        });
+            const booking = await tx.booking.create({
+                data: {
+                userId: req.user.id,
+                eventId: Number(event.id),
+                quantity: qty,
+                totalPrice,
+                paymentId: razorpay_payment_id,
+                },
+            });
 
-        const updatedEvent = await tx.event.update({
-            where: { id: event.id },
-            data: {
-            availableSeats: {
-                decrement: qty,
-            },
-            },
-        });
+            const updatedEvent = await tx.event.update({
+                where: { id: event.id },
+                data: {
+                availableSeats: {
+                    decrement: qty,
+                },
+                },
+            });
 
-        return { booking, updatedEvent };
-        });
+            return { booking, updatedEvent };
+            });
 
         return res.status(200).json({
         success: true,
         message: "Payment successful, booking confirmed",
         booking: result.booking,
         });
+        
     } catch (error) {
         console.error("Verify Payment Error:", error);
 

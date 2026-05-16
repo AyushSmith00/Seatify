@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#0b1220] text-white">
 
-      {/* NAVBAR */}
+      
       <nav className="border-b border-gray-800 bg-[#020617]/80 backdrop-blur sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
@@ -26,12 +26,21 @@ const Layout = ({ children }) => {
           <div className="flex items-center gap-3">
 
             {user?.role === "ORGANIZER" && (
-              <button
-                onClick={() => navigate("/create-event")}
-                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm"
-              >
-                + Create
-              </button>
+              <>
+                <button
+                  onClick={() => navigate("/create-event")}
+                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm"
+                >
+                  + Create
+                </button>
+
+                <button
+                  onClick={() => navigate("/my-events")}
+                  className="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm"
+                >
+                  My Events
+                </button>
+              </>
             )}
 
             {user?.role === "CUSTOMER" && (
@@ -53,7 +62,7 @@ const Layout = ({ children }) => {
         </div>
       </nav>
 
-      {/* CONTENT */}
+      
       <main className="max-w-7xl mx-auto px-6 py-8">
         {children}
       </main>
