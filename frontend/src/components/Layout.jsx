@@ -40,6 +40,13 @@ const Layout = ({ children }) => {
                 >
                   My Events
                 </button>
+
+                <button
+                  onClick={() => navigate("/events-stats")}
+                  className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg text-sm"
+                >
+                  Analytics
+                </button>
               </>
             )}
 
